@@ -1,0 +1,15 @@
+{
+  "name": "우리아이 스케줄",
+  "short_name": "가족스케줄",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#FDFBF7",
+  "theme_color": "#BAE1FF",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

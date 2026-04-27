@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="소율소원 시간표">
+    <meta name="theme-color" content="#BAE1FF">
+    
+    <title>소율소원 시간표</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+
+<!-- 스마트폰 홈 화면 앱 아이콘 설정 -->
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+
+<!-- 안드로이드 완벽 앱 설정 파일 연결 -->
+    <link rel="manifest" href="manifest.json">
+
+
+    <style>
+        :root {
+            --bg-color: #FDFBF7; 
+            --primary: #BAE1FF;  
+            --color-soyul: #FFB3BA; 
+            --color-sowon: #BAE1FF; 
+            --text-main: #4A4A4A;
+            --text-sub: #888888;
+            --card-bg: #FFFFFF;
+        }
+
+        * { box-sizing: border-box; font-family: 'Jua', sans-serif; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; }
+
+        .app-container { width: 100%; max-width: 480px; height: 100vh; background-color: var(--bg-color); position: relative; display: flex; flex-direction: column; overflow: hidden; }
+
+        header { background-color: white; padding: 40px 20px 10px 20px; text-align: center; z-index: 10; }
+        header h1 { color: #333; font-size: 22px; letter-spacing: 1px; margin-bottom: 5px; }
+        .family-id-display { font-size: 13px; color: #888; cursor: pointer; }
+        .demo-badge { background-color: #ccc; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-left: 5px; display: none; }
+
+        .child-tabs { display: flex; justify-content: center; gap: 8px; padding: 10px 20px; background: white; }
+        .child-tab { padding: 8px 18px; border-radius: 20px; font-size: 15px; background: #f0f0f0; color: #888; cursor: pointer; transition: 0.2s; }
+        .child-tab.active[data-child="소율"] { background: var(--color-soyul); color: white; }
+        .child-tab.active[data-child="소원"] { background: var(--color-sowon); color: #333; }
+        .child-tab.active[data-child="전체"] { background: #333; color: white; }
+
+        .day-tabs { display: flex; justify-content: space-between; background-color: white; padding: 5px 15px 10px; border-bottom: 1px solid #eee; z-index: 9; }
+        .day-tab { flex: 1; text-align: center; padding: 8px 0; border-radius: 15px; font-size: 16px; color: var(--text-sub); cursor: pointer; transition: 0.2s; margin: 0 5px; }
+        .app-container[data-theme="소율"] .day-tab.active { background-color: var(--color-soyul); color: white; }
+        .app-container[data-theme="소원"] .day-tab.active { background-color: var(--color-sowon); color: #333; }
+        .app-container[data-theme="전체"] .day-tab.active { background-color: #333; color: white; }
+
+        .view-container { flex: 1; overflow-y: auto; position: relative; }
+
+        .schedule-list { padding: 15px; padding-bottom: 90px; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 15px 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; gap: 15px; align-items: center; position: relative; border-left: 8px solid #ccc; }
+        .card.card-소율 { border-left-color: var(--color-soyul); }
+        .card.card-소원 { border-left-color: var(--color-sowon); }
+
+        .card-emoji { font-size: 35px; background: #f9f9f9; border-radius: 50%; width: 55px; height: 55px; display: flex; justify-content: center; align-items: center; }
+        .card-content { flex: 1; padding-right: 35px; }
+        .card-badge { display: inline-block; padding: 2px 6px; border-radius: 5px; font-size: 11px; margin-right: 5px; vertical-align: middle; }
+        .badge-소율 { background: var(--color-soyul); color: white; }
+        .badge-소원 { background: var(--color-sowon); color: #333; }
+        .card-time { font-size: 14px; color: #666; margin-bottom: 3px; font-weight: bold; }
+        .card-title { font-size: 20px; margin-bottom: 8px; color: #333; }
+        .card-detail { font-size: 13px; color: var(--text-sub); display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+
+        .card-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; }
+        .action-btn { background: none; border: none; font-size: 16px; cursor: pointer; color: #ccc; padding: 2px; }
+
+        .weekly-view { display: none; flex-direction: column; padding: 15px; height: 100%; padding-bottom: 85px; }
+        .tt-wrapper { display: flex; flex-direction: column; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); height: 100%; overflow: hidden; }
+        .tt-header { display: flex; background: #f9f9f9; border-bottom: 2px solid #eee; z-index: 10; }
+        .tt-time-col { width: 45px; flex-shrink: 0; }
+        .tt-day { flex: 1; text-align: center; padding: 10px 0; font-size: 14px; color: var(--text-main); border-left: 1px solid #eee; }
+        .tt-body-scroll { flex: 1; overflow-y: auto; position: relative; }
+        .tt-body { position: relative; height: 720px; }
+        .tt-grid-lines { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
+        .tt-grid-line { height: 80px; border-bottom: 1px solid #f0f0f0; box-sizing: border-box; display: flex; }
+        .tt-time-label { width: 45px; text-align: center; font-size: 11px; color: var(--text-sub); transform: translateY(-8px); background: white; }
+        .tt-columns { display: flex; position: absolute; top: 0; left: 45px; right: 0; bottom: 0; z-index: 2; }
+        .tt-col { flex: 1; border-left: 1px solid #f0f0f0; position: relative; }
+        
+        .tt-event { position: absolute; border-radius: 6px; padding: 4px; color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; border-left: 3px solid #ccc; }
+        .tt-event.event-소율 { background-color: #FFF0F2; border-left-color: var(--color-soyul); }
+        .tt-event.event-소원 { background-color: #F0F8FF; border-left-color: var(--color-sowon); }
+        .tt-event-time { font-size: 9px; color: #666; margin-bottom: 2px; letter-spacing: -0.3px; }
+        .tt-event-title { font-weight: bold; font-size: 11px; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tt-event-loc { color: #888; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 50; border-top-left-radius: 20px; border-top-right-radius: 20px; }
+        .nav-item { flex: 1; text-align: center; padding: 15px 0; font-size: 16px; color: #ccc; cursor: pointer; transition: color 0.3s; }
+        .app-container[data-theme="소율"] .nav-item.active { color: #FF8599; font-weight: bold; }
+        .app-container[data-theme="소원"] .nav-item.active { color: #85C5FF; font-weight: bold; }
+        .app-container[data-theme="전체"] .nav-item.active { color: #333; font-weight: bold; }
+
+        .fab { position: fixed; bottom: 80px; right: calc(50% - 240px + 20px); width: 60px; height: 60px; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 35px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); cursor: pointer; z-index: 100; border: none; transition: 0.3s; }
+        .app-container[data-theme="소율"] .fab { background-color: var(--color-soyul); }
+        .app-container[data-theme="소원"] .fab { background-color: var(--color-sowon); color: #333; }
+        .app-container[data-theme="전체"] .fab { background-color: #333; }
+        @media(max-width: 480px) { .fab { right: 20px; } }
+
+        /* 보기 전용 모드 (조부모님용) CSS */
+        body.view-only-mode .fab,
+        body.view-only-mode .card-actions { display: none !important; }
+
+        .overlay-screen, .modal { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-color); z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        .modal { background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 150; display: none; justify-content: center; align-items: flex-end; }
+        .modal-content { background: white; width: 100%; max-height: 90vh; overflow-y: auto; border-top-left-radius: 30px; border-top-right-radius: 30px; padding: 30px 20px; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-size: 14px; color: var(--text-main); }
+        .input-group input, .input-group select { width: 100%; padding: 12px 15px; border: 2px solid #eee; border-radius: 15px; font-size: 16px; outline: none; transition: 0.2s; }
+        .input-group input:focus, .input-group select:focus { border-color: #ccc; }
+        .time-row { display: flex; gap: 10px; }
+        .time-row > div { flex: 1; }
+
+        .select-group { display: flex; gap: 5px; margin-bottom: 15px; }
+        .form-btn { flex: 1; padding: 10px 0; text-align: center; background: #f5f5f5; border-radius: 10px; color: #888; cursor: pointer; font-size: 15px; }
+        .form-btn.day-btn.selected { background: #333; color: white; }
+        .form-btn.child-btn.selected[data-child="소율"] { background: var(--color-soyul); color: white; }
+        .form-btn.child-btn.selected[data-child="소원"] { background: var(--color-sowon); color: #333; }
+
+        /* 과목 아이콘 디자인 수정 */
+        .emoji-selector { display: flex; gap: 8px; margin-bottom: 15px; }
+        .emoji-btn { padding: 8px 5px; background: #f5f5f5; border: 2px solid transparent; border-radius: 12px; cursor: pointer; flex: 1; text-align: center; }
+        .emoji-btn.selected { background: #E8F4FA; border-color: var(--primary); }
+        .emoji-btn-icon { font-size: 24px; margin-bottom: 4px; }
+        .emoji-btn-text { font-size: 11px; color: #555; }
+
+        .btn-full { width: 100%; padding: 15px; background-color: #333; color: white; border: none; border-radius: 15px; font-size: 18px; cursor: pointer; margin-top: 10px; }
+        .btn-cancel { background-color: #eee; color: #333; margin-top: 10px; }
+
+        .hidden { display: none !important; }
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="app-container" data-theme="소율">
+
+    <div id="login-screen" class="overlay-screen">
+        <h1 style="font-size: 30px; margin-bottom: 10px;">👨‍👩‍👧‍👦 소율소원 시간표</h1>
+        <p style="margin-bottom: 30px; color: var(--text-sub);">가족 코드를 입력해 기기를 연결하세요!</p>
+        <div class="input-group" style="width: 100%;">
+            <input type="text" id="family-id-input" placeholder="예: 1234" style="text-align: center; font-size: 20px;">
+        </div>
+        <button id="btn-login" class="btn-full">시작하기</button>
+    </div>
+
+    <header>
+        <div class="child-tabs" id="main-child-tabs">
+            <div class="child-tab active" data-child="소율">👧 소율</div>
+            <div class="child-tab" data-child="소원">🧒 소원</div>
+            <div class="child-tab" data-child="전체">모아보기</div>
+        </div>
+        <div class="family-id-display" id="display-family-id">
+            가족 코드: - <span id="demo-badge" class="demo-badge">테스트 모드</span>
+        </div>
+    </header>
+
+    <div class="day-tabs" id="main-day-tabs">
+        <div class="day-tab" data-day="월">월</div>
+        <div class="day-tab" data-day="화">화</div>
+        <div class="day-tab" data-day="수">수</div>
+        <div class="day-tab" data-day="목">목</div>
+        <div class="day-tab" data-day="금">금</div>
+    </div>
+
+    <div class="view-container" id="view-container">
+        <div class="schedule-list" id="schedule-list"></div>
+
+        <div class="weekly-view" id="weekly-view">
+            <div class="tt-wrapper">
+                <div class="tt-header">
+                    <div class="tt-time-col"></div>
+                    <div class="tt-day">월</div>
+                    <div class="tt-day">화</div>
+                    <div class="tt-day">수</div>
+                    <div class="tt-day">목</div>
+                    <div class="tt-day">금</div>
+                </div>
+                <div class="tt-body-scroll">
+                    <div class="tt-body">
+                        <div class="tt-grid-lines" id="tt-grid-lines"></div>
+                        <div class="tt-columns">
+                            <div class="tt-col" id="tt-col-월"></div>
+                            <div class="tt-col" id="tt-col-화"></div>
+                            <div class="tt-col" id="tt-col-수"></div>
+                            <div class="tt-col" id="tt-col-목"></div>
+                            <div class="tt-col" id="tt-col-금"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="btn-open-modal" class="fab">+</button>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" id="nav-daily">📅 일별 보기</div>
+        <div class="nav-item" id="nav-weekly">📊 주간 시간표</div>
+    </div>
+
+    <!-- 스케줄 추가 모달 -->
+    <div id="add-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title" style="margin-bottom: 20px;">새로운 스케줄 추가</h2>
+            
+            <label style="display:block; margin-bottom:5px; font-size:14px; color:var(--text-main);">누구의 일정인가요?</label>
+            <div class="select-group" id="form-child-selector">
+                <div class="form-btn child-btn selected" data-child="소율">👧 소율</div>
+                <div class="form-btn child-btn" data-child="소원">🧒 소원</div>
+            </div>
+
+            <label style="display:block; margin-bottom:5px; font-size:14px; color:var(--text-main);">반복 요일</label>
+            <div class="select-group" id="form-day-selector">
+                <div class="form-btn day-btn" data-day="월">월</div>
+                <div class="form-btn day-btn" data-day="화">화</div>
+                <div class="form-btn day-btn" data-day="수">수</div>
+                <div class="form-btn day-btn" data-day="목">목</div>
+                <div class="form-btn day-btn" data-day="금">금</div>
+            </div>
+
+            <div class="time-row">
+                <div class="input-group">
+                    <label>시작 시간</label>
+                    <select id="input-start-time"></select>
+                </div>
+                <div class="input-group">
+                    <label>종료 시간</label>
+                    <select id="input-end-time"></select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>학원/수업명</label>
+                <input type="text" id="input-title" placeholder="예: 피아노 학원" autocomplete="off">
+            </div>
+
+            <!-- 과목 5개로 변경 -->
+            <label style="display:block; margin-bottom:5px; font-size:14px; color:var(--text-main);">아이콘 (자동선택 됨)</label>
+            <div class="emoji-selector" id="emoji-container">
+                <div class="emoji-btn" data-emoji="⚽">
+                    <div class="emoji-btn-icon">⚽</div><div class="emoji-btn-text">체육</div>
+                </div>
+                <div class="emoji-btn" data-emoji="🔤">
+                    <div class="emoji-btn-icon">🔤</div><div class="emoji-btn-text">영어</div>
+                </div>
+                <div class="emoji-btn" data-emoji="➕">
+                    <div class="emoji-btn-icon">➕</div><div class="emoji-btn-text">수학</div>
+                </div>
+                <div class="emoji-btn" data-emoji="🎵">
+                    <div class="emoji-btn-icon">🎵</div><div class="emoji-btn-text">음악</div>
+                </div>
+                <div class="emoji-btn" data-emoji="💻">
+                    <div class="emoji-btn-icon">💻</div><div class="emoji-btn-text">컴퓨터</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>장소</label>
+                <input type="text" id="input-location" placeholder="예: 피아노 학원 1층" autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>비고 / 준비물</label>
+                <input type="text" id="input-memo" placeholder="예: 피아노 교재 챙기기" autocomplete="off">
+            </div>
+
+            <button id="btn-save" class="btn-full">저장하기</button>
+            <button id="btn-close-modal" class="btn-full btn-cancel">취소</button>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, onValue, push, remove, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+    // ✅ 여기에 Firebase 정보를 넣어야 가족 공유가 작동합니다.
+    const firebaseConfig = {
+        apiKey: "AIzaSyBOubU5CU4IGIn5gwTa-VPyVQdh8hQZvug",
+        authDomain: "time-table-5fd7b.firebaseapp.com",
+        databaseURL: "https://time-table-5fd7b-default-rtdb.firebaseio.com", 
+        projectId: "time-table-5fd7b",
+        storageBucket: "time-table-5fd7b.firebasestorage.app",
+        messagingSenderId: "948483535361",
+        appId: "1:948483535361:web:34ebc5a64c0b2fcf454600"
+    };
+
+    // 보기 전용 모드 체크 (URL에 ?view=1 이 있으면 추가/수정/삭제 버튼 숨김)
+    if (window.location.search.includes('view=1')) {
+        document.body.classList.add('view-only-mode');
+    }
+
+    let isFirebaseActive = false;
+    let app, db;
+    if (firebaseConfig.apiKey !== "YOUR_API_KEY" && firebaseConfig.databaseURL.startsWith("http")) {
+        try { app = initializeApp(firebaseConfig); db = getDatabase(app); isFirebaseActive = true; } catch(e) { console.error("Firebase 에러:", e); }
+    }
+
+    let familyId = localStorage.getItem('familyId') || '';
+    let selectedEmoji = '';
+    let allSchedules = []; 
+    let currentView = 'daily'; 
+    let currentChild = '소율'; 
+    let editingId = null; 
+    
+    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+    let todayIndex = new Date().getDay(); 
+    if (todayIndex === 0 || todayIndex === 6) todayIndex = 1;
+    let currentDayTab = dayNames[todayIndex]; 
+
+    const appContainer = document.getElementById('app-container');
+    const loginScreen = document.getElementById('login-screen');
+    const displayFamilyId = document.getElementById('display-family-id');
+    const viewContainer = document.getElementById('view-container');
+    const scheduleList = document.getElementById('schedule-list');
+    const weeklyView = document.getElementById('weekly-view');
+    const modal = document.getElementById('add-modal');
+    const mainDayTabs = document.getElementById('main-day-tabs');
+    const inputStartTime = document.getElementById('input-start-time');
+    const inputEndTime = document.getElementById('input-end-time');
+
+    function format12(time24) {
+        if(!time24) return '';
+        const [h, m] = time24.split(':');
+        return `${parseInt(h) - 12}:${m}`;
+    }
+
+    const timeSlots = [];
+    for (let h = 13; h <= 21; h++) {
+        for (let m = 0; m < 60; m += 10) {
+            if (h === 21 && m > 0) continue; 
+            const mm = m === 0 ? '00' : m;
+            timeSlots.push({ val: `${h}:${mm}`, text: `${h-12}:${mm}` });
+        }
+    }
+    const optionsHTML = timeSlots.map(t => `<option value="${t.val}">${t.text}</option>`).join('');
+    inputStartTime.innerHTML = optionsHTML;
+    inputEndTime.innerHTML = optionsHTML;
+
+    function initTimetableGrid() {
+        const gridLines = document.getElementById('tt-grid-lines');
+        let html = '';
+        for(let h = 13; h <= 21; h++) html += `<div class="tt-grid-line"><div class="tt-time-label">${h-12}:00</div></div>`;
+        gridLines.innerHTML = html;
+    }
+    initTimetableGrid();
+
+    if (familyId) { initApp(); }
+    document.getElementById('btn-login').addEventListener('click', () => {
+        const inputId = document.getElementById('family-id-input').value.trim();
+        if(inputId) { familyId = inputId; localStorage.setItem('familyId', familyId); initApp(); } 
+        else { alert('가족 코드를 입력해주세요!'); }
+    });
+
+    function initApp() {
+        loginScreen.classList.add('hidden');
+        if (!isFirebaseActive) document.getElementById('demo-badge').style.display = 'inline-block';
+        displayFamilyId.childNodes[0].nodeValue = `가족 코드: ${familyId} (변경) `;
+        
+        updateUI();
+
+        if (isFirebaseActive) {
+            const scheduleRef = ref(db, 'schedules/' + familyId);
+            onValue(scheduleRef, (snapshot) => {
+                const data = snapshot.val();
+                allSchedules = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+                renderCurrentView();
+            });
+        } else {
+            loadLocalSchedules();
+        }
+    }
+
+    document.querySelectorAll('.child-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            currentChild = e.target.getAttribute('data-child');
+            appContainer.setAttribute('data-theme', currentChild); 
+            updateUI(); renderCurrentView();
+        });
+    });
+
+    document.querySelectorAll('.day-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            currentDayTab = e.target.getAttribute('data-day');
+            updateUI(); renderCurrentView();
+        });
+    });
+
+    document.getElementById('nav-daily').addEventListener('click', () => {
+        currentView = 'daily'; document.getElementById('nav-daily').classList.add('active'); document.getElementById('nav-weekly').classList.remove('active');
+        scheduleList.style.display = 'block'; weeklyView.style.display = 'none';
+        mainDayTabs.style.display = 'flex'; viewContainer.style.overflowY = 'auto'; 
+        updateUI(); renderCurrentView();
+    });
+
+    document.getElementById('nav-weekly').addEventListener('click', () => {
+        currentView = 'weekly'; document.getElementById('nav-weekly').classList.add('active'); document.getElementById('nav-daily').classList.remove('active');
+        scheduleList.style.display = 'none'; weeklyView.style.display = 'flex';
+        mainDayTabs.style.display = 'none'; viewContainer.style.overflowY = 'hidden'; 
+        updateUI(); renderCurrentView();
+    });
+
+    function updateUI() {
+        document.querySelectorAll('.child-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-child') === currentChild));
+        document.querySelectorAll('.day-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-day') === currentDayTab));
+    }
+
+    function renderCurrentView() {
+        if (currentView === 'daily') renderDaily(); else renderWeekly();
+    }
+
+    function renderDaily() {
+        scheduleList.innerHTML = '';
+        let filtered = allSchedules.filter(s => !s.days || s.days.includes(currentDayTab));
+        if(currentChild !== '전체') filtered = filtered.filter(s => (s.child || '소율') === currentChild);
+        
+        if (filtered.length > 0) {
+            filtered.sort((a, b) => (a.startTime || a.time).localeCompare(b.startTime || b.time));
+            filtered.forEach(item => {
+                const childName = item.child || '소율';
+                const sTime = format12(item.startTime || item.time || "13:00");
+                const eTime = format12(item.endTime || "");
+                const badgeHTML = currentChild === '전체' ? `<span class="card-badge badge-${childName}">${childName}</span>` : '';
+
+                const card = document.createElement('div');
+                card.className = `card card-${childName}`;
+                card.innerHTML = `
+                    <div class="card-emoji">${item.emoji}</div>
+                    <div class="card-content">
+                        <div class="card-time">${badgeHTML} ⏰ ${sTime} ~ ${eTime}</div>
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-detail">📍 장소: ${item.location || item.pickup || "미지정"}</div>
+                        ${item.memo ? `<div class="card-detail" style="color:#FFB3BA;">🎒 ${item.memo}</div>` : ''}
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn edit-btn" data-id="${item.id}">✏️</button>
+                        <button class="action-btn delete-btn" data-id="${item.id}">✖</button>
+                    </div>
+                `;
+                scheduleList.appendChild(card);
+            });
+        } else {
+            scheduleList.innerHTML = `<div style="text-align:center; padding: 50px 20px; color: var(--text-sub);"><div style="font-size:50px; margin-bottom:15px;">👀</div>등록된 스케줄이 없어요!<br>버튼을 눌러 추가해주세요.</div>`;
+        }
+    }
+
+    function renderWeekly() {
+        const columns = { '월': [], '화': [], '수': [], '목': [], '금': [] };
+        
+        allSchedules.forEach(item => {
+            const childName = item.child || '소율';
+            if(currentChild !== '전체' && childName !== currentChild) return;
+
+            const daysToApply = item.days || ['월','화','수','목','금']; 
+            const sTime24 = item.startTime || item.time || "13:00";
+            const eTime24 = item.endTime || "14:00";
+            
+            const [sH, sM] = sTime24.split(':').map(Number);
+            const [eH, eM] = eTime24.split(':').map(Number);
+            const startMinutes = (sH - 13) * 60 + sM;
+            const endMinutes = (eH - 13) * 60 + eM;
+            let duration = endMinutes - startMinutes;
+            if(duration < 25) duration = 25; 
+            
+            const topPx = startMinutes * (80 / 60);
+            const heightPx = duration * (80 / 60);
+            
+            let inlineStyle = `top: ${topPx}px; height: ${heightPx}px;`;
+            if (currentChild === '전체') {
+                if (childName === '소율') inlineStyle += ` left: 2%; width: 46%;`;
+                if (childName === '소원') inlineStyle += ` right: 2%; left: auto; width: 46%;`;
+            } else { inlineStyle += ` left: 2px; right: 2px;`; }
+            
+            const eventHTML = `
+                <div class="tt-event event-${childName}" style="${inlineStyle}">
+                    <div class="tt-event-time">${format12(sTime24)}~${format12(eTime24)}</div>
+                    <div class="tt-event-title">${currentChild==='전체'?`[${childName}]`:''} ${item.emoji} ${item.title}</div>
+                    <div class="tt-event-loc">${item.location || ''}</div>
+                </div>
+            `;
+            daysToApply.forEach(day => { if(columns[day]) columns[day].push(eventHTML); });
+        });
+
+        ['월','화','수','목','금'].forEach(day => {
+            const colEl = document.getElementById(`tt-col-${day}`);
+            if(colEl) colEl.innerHTML = columns[day].join('');
+        });
+    }
+
+    scheduleList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-btn')) { if(confirm('이 일정을 삭제할까요?')) deleteData(e.target.getAttribute('data-id')); } 
+        else if (e.target.classList.contains('edit-btn')) { openEditModal(e.target.getAttribute('data-id')); }
+    });
+
+    displayFamilyId.addEventListener('click', () => {
+        if(confirm('다른 가족 코드로 변경하시겠습니까?')) { localStorage.removeItem('familyId'); location.reload(); }
+    });
+
+    document.getElementById('btn-open-modal').addEventListener('click', () => {
+        editingId = null;
+        document.getElementById('modal-title').textContent = '새로운 스케줄 추가';
+        document.getElementById('input-title').value = '';
+        document.getElementById('input-location').value = '';
+        document.getElementById('input-memo').value = '';
+        inputStartTime.value = "13:00"; inputEndTime.value = "14:00";
+        selectedEmoji = '';
+        
+        document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+        document.querySelectorAll('.day-btn').forEach(b => b.classList.toggle('selected', b.getAttribute('data-day') === currentDayTab));
+        
+        let childToSelect = currentChild === '전체' ? '소율' : currentChild;
+        document.querySelectorAll('.child-btn').forEach(b => b.classList.toggle('selected', b.getAttribute('data-child') === childToSelect));
+
+        modal.style.display = 'flex';
+    });
+
+    function openEditModal(id) {
+        const item = allSchedules.find(s => s.id === id);
+        if(!item) return;
+
+        editingId = id;
+        document.getElementById('modal-title').textContent = '스케줄 수정';
+        document.getElementById('input-title').value = item.title;
+        document.getElementById('input-location').value = item.location || item.pickup || '';
+        document.getElementById('input-memo').value = item.memo || '';
+        inputStartTime.value = item.startTime || item.time || "13:00";
+        inputEndTime.value = item.endTime || "14:00";
+
+        selectedEmoji = item.emoji;
+        document.querySelectorAll('.emoji-btn').forEach(b => b.classList.toggle('selected', b.getAttribute('data-emoji') === item.emoji));
+        document.querySelectorAll('.day-btn').forEach(b => b.classList.toggle('selected', (item.days || []).includes(b.getAttribute('data-day'))));
+
+        const itemChild = item.child || '소율';
+        document.querySelectorAll('.child-btn').forEach(b => b.classList.toggle('selected', b.getAttribute('data-child') === itemChild));
+
+        modal.style.display = 'flex';
+    }
+    
+    document.getElementById('btn-close-modal').addEventListener('click', () => { modal.style.display = 'none'; });
+    document.querySelectorAll('.day-btn').forEach(btn => btn.addEventListener('click', (e) => e.target.classList.toggle('selected')));
+    document.querySelectorAll('.child-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.child-btn').forEach(b => b.classList.remove('selected'));
+            e.target.classList.add('selected');
+        });
+    });
+    
+    // 과목 아이콘 클릭 이벤트 (div 구조라 closest 사용)
+    document.querySelectorAll('.emoji-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+            const target = e.target.closest('.emoji-btn');
+            target.classList.add('selected');
+            selectedEmoji = target.getAttribute('data-emoji');
+        });
+    });
+
+    // 5과목 자동 할당 로직
+    function autoAssignEmoji(title) {
+        if(title.includes('체육') || title.includes('축구') || title.includes('태권도') || title.includes('수영') || title.includes('운동')) return '⚽';
+        if(title.includes('영어') || title.includes('파닉스') || title.includes('원어민')) return '🔤';
+        if(title.includes('수학') || title.includes('산수') || title.includes('연산') || title.includes('사고력')) return '➕';
+        if(title.includes('음악') || title.includes('피아노') || title.includes('바이올린') || title.includes('노래')) return '🎵';
+        if(title.includes('컴퓨터') || title.includes('코딩') || title.includes('방과후')) return '💻';
+        return '⚽'; // 기본값
+    }
+
+    document.getElementById('btn-save').addEventListener('click', () => {
+        const startTime = inputStartTime.value;
+        const endTime = inputEndTime.value;
+        const title = document.getElementById('input-title').value.trim();
+        const locationStr = document.getElementById('input-location').value.trim();
+        const memo = document.getElementById('input-memo').value.trim();
+        
+        const selectedDays = Array.from(document.querySelectorAll('.day-btn.selected')).map(el => el.getAttribute('data-day'));
+        const selectedChild = document.querySelector('.child-btn.selected').getAttribute('data-child');
+
+        if(selectedDays.length === 0) { alert('반복할 요일을 최소 1개 이상 선택해주세요!'); return; }
+        if(!title || !locationStr) { alert('학원명과 장소를 모두 입력해주세요!'); return; }
+        if(startTime >= endTime) { alert('종료 시간은 시작 시간보다 늦어야 합니다!'); return; }
+
+        const newData = {
+            child: selectedChild, startTime, endTime, title, location: locationStr, memo, 
+            emoji: selectedEmoji || autoAssignEmoji(title), days: selectedDays
+        };
+
+        if (isFirebaseActive) {
+            if (editingId) set(ref(db, `schedules/${familyId}/${editingId}`), newData).then(() => closeModalAndClear());
+            else push(ref(db, 'schedules/' + familyId), newData).then(() => closeModalAndClear());
+        } else {
+            if (editingId) {
+                const idx = allSchedules.findIndex(s => s.id === editingId);
+                newData.id = editingId; allSchedules[idx] = newData;
+            } else {
+                newData.id = Date.now().toString(); allSchedules.push(newData);
+            }
+            localStorage.setItem('mockSchedules_' + familyId, JSON.stringify(allSchedules));
+            renderCurrentView(); closeModalAndClear();
+        }
+    });
+
+    function closeModalAndClear() { modal.style.display = 'none'; editingId = null; }
+
+    function deleteData(id) {
+        if (isFirebaseActive) { remove(ref(db, `schedules/${familyId}/${id}`)); } 
+        else {
+            allSchedules = allSchedules.filter(item => item.id !== id);
+            localStorage.setItem('mockSchedules_' + familyId, JSON.stringify(allSchedules));
+            renderCurrentView();
+        }
+    }
+
+    function loadLocalSchedules() {
+        allSchedules = JSON.parse(localStorage.getItem('mockSchedules_' + familyId)) || [];
+        renderCurrentView();
+    }
+</script>
+</body>
+</html>
