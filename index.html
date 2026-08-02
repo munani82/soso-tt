@@ -81,25 +81,29 @@
         .card-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; }
         .action-btn { background: none; border: none; font-size: 16px; cursor: pointer; color: #ccc; padding: 2px; }
 
-        .weekly-view { display: none; flex-direction: column; padding: 15px; height: 100%; padding-bottom: 85px; }
-        .tt-wrapper { display: flex; flex-direction: column; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); height: 100%; overflow: hidden; }
-        .tt-header { display: flex; background: #f9f9f9; border-bottom: 2px solid #eee; z-index: 10; }
+        .weekly-view { display: none; flex-direction: column; padding: 12px; height: 100%; padding-bottom: 85px; }
+        .tt-wrapper { display: flex; flex-direction: column; background: white; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); height: 100%; overflow: hidden; border: 1px solid #EAEAEA; }
+        .tt-header { display: flex; background: #F8FAFC; border-bottom: 2px solid #E2E8F0; z-index: 10; font-weight: bold; }
         .tt-time-col { width: 45px; flex-shrink: 0; }
-        .tt-day { flex: 1; text-align: center; padding: 10px 0; font-size: 14px; color: var(--text-main); border-left: 1px solid #eee; font-weight: bold; }
+        .tt-day { flex: 1; text-align: center; padding: 12px 0; font-size: 14px; color: #334155; border-left: 1px solid #E2E8F0; font-weight: bold; }
         .tt-body-scroll { flex: 1; overflow-y: auto; position: relative; }
-        .tt-body { position: relative; height: 720px; }
+        .tt-body { position: relative; height: 864px; }
         .tt-grid-lines { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
-        .tt-grid-line { height: 80px; border-bottom: 1px solid #f0f0f0; box-sizing: border-box; display: flex; }
-        .tt-time-label { width: 45px; text-align: center; font-size: 11px; color: var(--text-sub); transform: translateY(-8px); background: white; }
+        .tt-grid-line { height: 96px; border-bottom: 1px dashed #E2E8F0; box-sizing: border-box; display: flex; }
+        .tt-time-label { width: 45px; text-align: center; font-size: 11px; font-weight: 600; color: #64748B; transform: translateY(-7px); background: transparent; }
         .tt-columns { display: flex; position: absolute; top: 0; left: 45px; right: 0; bottom: 0; z-index: 2; }
-        .tt-col { flex: 1; border-left: 1px solid #f0f0f0; position: relative; }
+        .tt-col { flex: 1; border-left: 1px solid #F1F5F9; position: relative; }
         
-        .tt-event { position: absolute; border-radius: 6px; padding: 4px; color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; border-left: 3px solid #ccc; }
-        .tt-event.event-소율 { background-color: #FFF0F2; border-left-color: var(--color-soyul); }
-        .tt-event.event-소원 { background-color: #F0F8FF; border-left-color: var(--color-sowon); }
-        .tt-event-time { font-size: 9px; color: #666; margin-bottom: 2px; letter-spacing: -0.3px; font-weight: 500; }
-        .tt-event-title { font-weight: bold; font-size: 11px; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .tt-event-loc { color: #888; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tt-event { position: absolute; border-radius: 8px; padding: 5px 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); overflow: hidden; display: flex; flex-direction: column; justify-content: flex-start; border-left: 4px solid #ccc; transition: transform 0.1s ease; cursor: pointer; }
+        .tt-event:hover { transform: scale(1.02); z-index: 10; }
+        .tt-event.event-소율 { background-color: #FFF0F4; border-left-color: #FF5A79; color: #5C1525; }
+        .tt-event.event-소원 { background-color: #EFF7FF; border-left-color: #2589E6; color: #0E365C; }
+        .tt-event-time { font-size: 10px; font-weight: 700; margin-bottom: 3px; display: flex; align-items: center; gap: 3px; letter-spacing: -0.2px; opacity: 0.9; }
+        .tt-child-badge { display: inline-block; padding: 1px 4px; border-radius: 4px; font-size: 9px; font-weight: bold; color: white; line-height: 1.1; flex-shrink: 0; }
+        .tt-child-badge.badge-소율 { background-color: #FF5A79; }
+        .tt-child-badge.badge-소원 { background-color: #2589E6; }
+        .tt-event-title { font-weight: bold; font-size: 12px; line-height: 1.25; word-break: break-all; margin-bottom: 2px; }
+        .tt-event-loc { font-size: 10px; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 50; border-top-left-radius: 20px; border-top-right-radius: 20px; }
         .nav-item { flex: 1; text-align: center; padding: 15px 0; font-size: 16px; color: #ccc; cursor: pointer; transition: color 0.3s; font-weight: 600; }
@@ -488,6 +492,7 @@
 
     function renderWeekly() {
         const columns = { '월': [], '화': [], '수': [], '목': [], '금': [] };
+        const hourPx = 96; // 96px per hour
         
         allSchedules.forEach(item => {
             const childName = item.child || '소율';
@@ -511,22 +516,23 @@
             let duration = endMinutes - startMinutes;
             if(duration < 25) duration = 25; 
             
-            const topPx = startMinutes * (80 / 60);
-            const heightPx = duration * (80 / 60);
+            const topPx = startMinutes * (hourPx / 60);
+            const heightPx = Math.max(duration * (hourPx / 60) - 2, 34);
             
             let inlineStyle = `top: ${topPx}px; height: ${heightPx}px;`;
             if (currentChild === '전체') {
-                if (childName === '소율') inlineStyle += ` left: 2%; width: 46%;`;
-                if (childName === '소원') inlineStyle += ` right: 2%; left: auto; width: 46%;`;
+                if (childName === '소율') inlineStyle += ` left: 1px; width: calc(50% - 2px);`;
+                if (childName === '소원') inlineStyle += ` left: 50%; width: calc(50% - 2px);`;
             } else { inlineStyle += ` left: 2px; right: 2px;`; }
             
+            const childBadge = currentChild === '전체' ? `<span class="tt-child-badge badge-${childName}">${childName}</span>` : '';
             const seasonPrefix = item.season === 'vacation' ? '🌴 ' : '';
 
             const eventHTML = `
                 <div class="tt-event event-${childName}" style="${inlineStyle}">
-                    <div class="tt-event-time">${format12(sTime24)}~${format12(eTime24)}</div>
-                    <div class="tt-event-title">${currentChild==='전체'?`[${childName}]`:''} ${seasonPrefix}${item.emoji} ${item.title}</div>
-                    <div class="tt-event-loc">${item.location || ''}</div>
+                    <div class="tt-event-time">${childBadge}<span>${format12(sTime24)}~${format12(eTime24)}</span></div>
+                    <div class="tt-event-title">${seasonPrefix}${item.emoji} ${item.title}</div>
+                    ${item.location ? `<div class="tt-event-loc">📍 ${item.location}</div>` : ''}
                 </div>
             `;
             daysToApply.forEach(day => { if(columns[day]) columns[day].push(eventHTML); });
