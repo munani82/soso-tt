@@ -87,7 +87,7 @@
         .tt-time-col { width: 45px; flex-shrink: 0; }
         .tt-day { flex: 1; text-align: center; padding: 12px 0; font-size: 14px; color: #334155; border-left: 1px solid #E2E8F0; font-weight: bold; }
         .tt-body-scroll { flex: 1; overflow-y: auto; position: relative; }
-        .tt-body { position: relative; height: 864px; }
+        .tt-body { position: relative; height: 1344px; }
         .tt-grid-lines { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
         .tt-grid-line { height: 96px; border-bottom: 1px dashed #E2E8F0; box-sizing: border-box; display: flex; }
         .tt-time-label { width: 45px; text-align: center; font-size: 11px; font-weight: 600; color: #64748B; transform: translateY(-7px); background: transparent; }
@@ -353,16 +353,25 @@
 
     function format12(time24) {
         if(!time24) return '';
-        const [h, m] = time24.split(':');
-        return `${parseInt(h) - 12}:${m}`;
+        const [hStr, mStr] = time24.split(':');
+        const h = parseInt(hStr, 10);
+        const m = mStr || '00';
+        if (h < 12) {
+            return `오전 ${h === 0 ? 12 : h}:${m}`;
+        } else if (h === 12) {
+            return `오후 12:${m}`;
+        } else {
+            return `오후 ${h - 12}:${m}`;
+        }
     }
 
     const timeSlots = [];
-    for (let h = 13; h <= 21; h++) {
+    for (let h = 8; h <= 21; h++) {
         for (let m = 0; m < 60; m += 10) {
-            if (h === 21 && m > 0) continue; 
+            if (h === 21 && m > 30) continue; 
             const mm = m === 0 ? '00' : m;
-            timeSlots.push({ val: `${h}:${mm}`, text: `${h-12}:${mm}` });
+            const val = `${h < 10 ? '0' + h : h}:${mm}`;
+            timeSlots.push({ val: val, text: format12(val) });
         }
     }
     const optionsHTML = timeSlots.map(t => `<option value="${t.val}">${t.text}</option>`).join('');
@@ -372,7 +381,10 @@
     function initTimetableGrid() {
         const gridLines = document.getElementById('tt-grid-lines');
         let html = '';
-        for(let h = 13; h <= 21; h++) html += `<div class="tt-grid-line"><div class="tt-time-label">${h-12}:00</div></div>`;
+        for(let h = 8; h <= 21; h++) {
+            const label = h < 12 ? `오전 ${h}` : (h === 12 ? `오후 12` : `오후 ${h-12}`);
+            html += `<div class="tt-grid-line"><div class="tt-time-label">${label}</div></div>`;
+        }
         gridLines.innerHTML = html;
     }
     initTimetableGrid();
@@ -511,8 +523,8 @@
             
             const [sH, sM] = sTime24.split(':').map(Number);
             const [eH, eM] = eTime24.split(':').map(Number);
-            const startMinutes = (sH - 13) * 60 + sM;
-            const endMinutes = (eH - 13) * 60 + eM;
+            const startMinutes = (sH - 8) * 60 + sM;
+            const endMinutes = (eH - 8) * 60 + eM;
             let duration = endMinutes - startMinutes;
             if(duration < 25) duration = 25; 
             
@@ -555,7 +567,7 @@
         document.getElementById('input-title').value = '';
         document.getElementById('input-location').value = '';
         document.getElementById('input-memo').value = '';
-        inputStartTime.value = "13:00"; inputEndTime.value = "14:00";
+        inputStartTime.value = "09:00"; inputEndTime.value = "10:00";
         selectedEmoji = '';
         
         document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
@@ -577,8 +589,8 @@
         document.getElementById('input-title').value = item.title;
         document.getElementById('input-location').value = item.location || item.pickup || '';
         document.getElementById('input-memo').value = item.memo || '';
-        inputStartTime.value = item.startTime || item.time || "13:00";
-        inputEndTime.value = item.endTime || "14:00";
+        inputStartTime.value = item.startTime || item.time || "09:00";
+        inputEndTime.value = item.endTime || "10:00";
 
         selectedEmoji = item.emoji;
         document.querySelectorAll('.emoji-btn').forEach(b => b.classList.toggle('selected', b.getAttribute('data-emoji') === item.emoji));
