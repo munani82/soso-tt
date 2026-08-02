@@ -61,25 +61,25 @@
         .view-container { flex: 1; overflow-y: auto; position: relative; }
 
         .schedule-list { padding: 15px; padding-bottom: 90px; }
-        .card { background: var(--card-bg); border-radius: 20px; padding: 15px 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; gap: 15px; align-items: center; position: relative; border-left: 8px solid #ccc; }
+        .card { background: var(--card-bg); border-radius: 18px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); display: flex; gap: 12px; align-items: center; position: relative; border-left: 6px solid #ccc; }
         .card.card-소율 { border-left-color: var(--color-soyul); }
         .card.card-소원 { border-left-color: var(--color-sowon); }
 
-        .card-emoji { font-size: 35px; background: #f9f9f9; border-radius: 50%; width: 55px; height: 55px; display: flex; justify-content: center; align-items: center; }
-        .card-content { flex: 1; padding-right: 35px; }
-        .card-badge { display: inline-block; padding: 2px 6px; border-radius: 5px; font-size: 11px; margin-right: 5px; vertical-align: middle; font-weight: 600; }
+        .card-emoji { font-size: 24px; background: #f7f7f8; border-radius: 50%; width: 44px; height: 44px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; }
+        .card-content { flex: 1; min-width: 0; padding-right: 32px; }
+        .card-badge { display: inline-block; padding: 2px 5px; border-radius: 5px; font-size: 11px; margin-right: 4px; vertical-align: middle; font-weight: 600; flex-shrink: 0; }
         .badge-소율 { background: var(--color-soyul); color: white; }
         .badge-소원 { background: var(--color-sowon); color: #333; }
         .badge-season-vacation { background: #FF9800; color: white; }
         .badge-season-regular { background: #1E88E5; color: white; }
         .badge-season-all { background: #4CAF50; color: white; }
 
-        .card-time { font-size: 14px; color: #666; margin-bottom: 3px; font-weight: bold; }
-        .card-title { font-size: 20px; margin-bottom: 8px; color: #333; font-weight: bold; }
-        .card-detail { font-size: 13px; color: var(--text-sub); display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+        .card-time { font-size: 13px; color: #4B5563; margin-bottom: 4px; font-weight: 700; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-title { font-size: 18px; margin-bottom: 4px; color: #1F2937; font-weight: bold; }
+        .card-detail { font-size: 12.5px; color: var(--text-sub); display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
 
-        .card-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; }
-        .action-btn { background: none; border: none; font-size: 16px; cursor: pointer; color: #ccc; padding: 2px; }
+        .card-actions { position: absolute; top: 12px; right: 10px; display: flex; gap: 6px; }
+        .action-btn { background: none; border: none; font-size: 15px; cursor: pointer; color: #ccc; padding: 2px; }
 
         .weekly-view { display: none; flex-direction: column; padding: 10px; height: 100%; padding-bottom: 85px; }
         .tt-wrapper { display: flex; flex-direction: column; background: white; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); height: 100%; overflow: hidden; border: 1px solid #EAEAEA; position: relative; }
@@ -371,6 +371,28 @@
         }
     }
 
+    function formatTimeRange(startTime24, endTime24) {
+        if (!startTime24) return '';
+        if (!endTime24) return format12(startTime24);
+
+        const [sH, sM] = startTime24.split(':').map(Number);
+        const [eH, eM] = endTime24.split(':').map(Number);
+
+        const sPeriod = sH < 12 ? '오전' : '오후';
+        const ePeriod = eH < 12 ? '오전' : '오후';
+
+        const sHour12 = sH === 0 ? 12 : (sH > 12 ? sH - 12 : sH);
+        const eHour12 = eH === 0 ? 12 : (eH > 12 ? eH - 12 : eH);
+        const sMinStr = (sM || 0).toString().padStart(2, '0');
+        const eMinStr = (eM || 0).toString().padStart(2, '0');
+
+        if (sPeriod === ePeriod) {
+            return `${sPeriod} ${sHour12}:${sMinStr}~${eHour12}:${eMinStr}`;
+        } else {
+            return `${sPeriod} ${sHour12}:${sMinStr}~${ePeriod} ${eHour12}:${eMinStr}`;
+        }
+    }
+
     const timeSlots = [];
     for (let h = 8; h <= 21; h++) {
         for (let m = 0; m < 60; m += 10) {
@@ -478,8 +500,7 @@
             filtered.sort((a, b) => (a.startTime || a.time).localeCompare(b.startTime || b.time));
             filtered.forEach(item => {
                 const childName = item.child || '소율';
-                const sTime = format12(item.startTime || item.time || "13:00");
-                const eTime = format12(item.endTime || "");
+                const timeRangeStr = formatTimeRange(item.startTime || item.time || "13:00", item.endTime || "");
                 const badgeHTML = currentChild === '전체' ? `<span class="card-badge badge-${childName}">${childName}</span>` : '';
                 
                 let seasonBadgeHTML = '';
@@ -491,7 +512,7 @@
                 card.innerHTML = `
                     <div class="card-emoji">${item.emoji}</div>
                     <div class="card-content">
-                        <div class="card-time">${badgeHTML}${seasonBadgeHTML} ⏰ ${sTime} ~ ${eTime}</div>
+                        <div class="card-time">${badgeHTML}${seasonBadgeHTML} ⏰ ${timeRangeStr}</div>
                         <div class="card-title">${item.title}</div>
                         <div class="card-detail">📍 장소: ${item.location || item.pickup || "미지정"}</div>
                         ${item.memo ? `<div class="card-detail" style="color:#FFB3BA;">🎒 ${item.memo}</div>` : ''}
