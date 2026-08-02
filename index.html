@@ -10,9 +10,8 @@
     
     <title>소율소원 시간표</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <!-- 토스 및 핀테크 표준 폰트 (Pretendard) 연결 -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 
 <!-- 스마트폰 홈 화면 앱 아이콘 설정 -->
     <link rel="apple-touch-icon" href="icon.png">
@@ -28,35 +27,33 @@
             --primary: #BAE1FF;  
             --color-soyul: #FFB3BA; 
             --color-sowon: #BAE1FF; 
-            --text-main: #4A4A4A;
+            --text-main: #333333;
             --text-sub: #888888;
             --card-bg: #FFFFFF;
         }
 
-        * { box-sizing: border-box; font-family: 'Jua', sans-serif; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; }
 
         .app-container { width: 100%; max-width: 480px; height: 100vh; background-color: var(--bg-color); position: relative; display: flex; flex-direction: column; overflow: hidden; }
 
         header { background-color: white; padding: 25px 20px 10px 20px; text-align: center; z-index: 10; border-bottom: 1px solid #f0f0f0; }
         header h1 { color: #333; font-size: 22px; letter-spacing: 1px; margin-bottom: 5px; }
-        .family-id-display { font-size: 12px; color: #888; cursor: pointer; margin-top: 4px; }
-        .demo-badge { background-color: #ccc; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-left: 5px; display: none; }
 
         .child-tabs { display: flex; justify-content: center; gap: 8px; padding: 6px 0; background: white; }
-        .child-tab { padding: 8px 18px; border-radius: 20px; font-size: 15px; background: #f0f0f0; color: #888; cursor: pointer; transition: 0.2s; }
+        .child-tab { padding: 8px 18px; border-radius: 20px; font-size: 15px; background: #f0f0f0; color: #888; cursor: pointer; transition: 0.2s; font-weight: 600; }
         .child-tab.active[data-child="소율"] { background: var(--color-soyul); color: white; }
         .child-tab.active[data-child="소원"] { background: var(--color-sowon); color: #333; }
         .child-tab.active[data-child="전체"] { background: #333; color: white; }
 
         /* 방학용 / 학기중 시간표 전용 시즌 스위처 스타일 */
         .season-tabs { display: flex; justify-content: center; gap: 8px; padding: 6px 0; margin-top: 4px; background: white; }
-        .season-tab { flex: 1; text-align: center; padding: 7px 12px; border-radius: 15px; font-size: 14px; background: #f5f5f5; color: #888; cursor: pointer; transition: 0.2s; border: 1.5px solid transparent; }
+        .season-tab { flex: 1; text-align: center; padding: 7px 12px; border-radius: 15px; font-size: 14px; background: #f5f5f5; color: #888; cursor: pointer; transition: 0.2s; border: 1.5px solid transparent; font-weight: 600; }
         .season-tab.active[data-season="regular"] { background: #E8F4FA; color: #1E88E5; border-color: #90CAF9; font-weight: bold; }
         .season-tab.active[data-season="vacation"] { background: #FFF3E0; color: #E65100; border-color: #FFB74D; font-weight: bold; }
 
         .day-tabs { display: flex; justify-content: space-between; background-color: white; padding: 5px 15px 10px; border-bottom: 1px solid #eee; z-index: 9; }
-        .day-tab { flex: 1; text-align: center; padding: 8px 0; border-radius: 15px; font-size: 16px; color: var(--text-sub); cursor: pointer; transition: 0.2s; margin: 0 5px; }
+        .day-tab { flex: 1; text-align: center; padding: 8px 0; border-radius: 15px; font-size: 16px; color: var(--text-sub); cursor: pointer; transition: 0.2s; margin: 0 5px; font-weight: 600; }
         .app-container[data-theme="소율"] .day-tab.active { background-color: var(--color-soyul); color: white; }
         .app-container[data-theme="소원"] .day-tab.active { background-color: var(--color-sowon); color: #333; }
         .app-container[data-theme="전체"] .day-tab.active { background-color: #333; color: white; }
@@ -70,7 +67,7 @@
 
         .card-emoji { font-size: 35px; background: #f9f9f9; border-radius: 50%; width: 55px; height: 55px; display: flex; justify-content: center; align-items: center; }
         .card-content { flex: 1; padding-right: 35px; }
-        .card-badge { display: inline-block; padding: 2px 6px; border-radius: 5px; font-size: 11px; margin-right: 5px; vertical-align: middle; }
+        .card-badge { display: inline-block; padding: 2px 6px; border-radius: 5px; font-size: 11px; margin-right: 5px; vertical-align: middle; font-weight: 600; }
         .badge-소율 { background: var(--color-soyul); color: white; }
         .badge-소원 { background: var(--color-sowon); color: #333; }
         .badge-season-vacation { background: #FF9800; color: white; }
@@ -78,7 +75,7 @@
         .badge-season-all { background: #4CAF50; color: white; }
 
         .card-time { font-size: 14px; color: #666; margin-bottom: 3px; font-weight: bold; }
-        .card-title { font-size: 20px; margin-bottom: 8px; color: #333; }
+        .card-title { font-size: 20px; margin-bottom: 8px; color: #333; font-weight: bold; }
         .card-detail { font-size: 13px; color: var(--text-sub); display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
 
         .card-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; }
@@ -88,7 +85,7 @@
         .tt-wrapper { display: flex; flex-direction: column; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); height: 100%; overflow: hidden; }
         .tt-header { display: flex; background: #f9f9f9; border-bottom: 2px solid #eee; z-index: 10; }
         .tt-time-col { width: 45px; flex-shrink: 0; }
-        .tt-day { flex: 1; text-align: center; padding: 10px 0; font-size: 14px; color: var(--text-main); border-left: 1px solid #eee; }
+        .tt-day { flex: 1; text-align: center; padding: 10px 0; font-size: 14px; color: var(--text-main); border-left: 1px solid #eee; font-weight: bold; }
         .tt-body-scroll { flex: 1; overflow-y: auto; position: relative; }
         .tt-body { position: relative; height: 720px; }
         .tt-grid-lines { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
@@ -100,17 +97,17 @@
         .tt-event { position: absolute; border-radius: 6px; padding: 4px; color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; border-left: 3px solid #ccc; }
         .tt-event.event-소율 { background-color: #FFF0F2; border-left-color: var(--color-soyul); }
         .tt-event.event-소원 { background-color: #F0F8FF; border-left-color: var(--color-sowon); }
-        .tt-event-time { font-size: 9px; color: #666; margin-bottom: 2px; letter-spacing: -0.3px; }
+        .tt-event-time { font-size: 9px; color: #666; margin-bottom: 2px; letter-spacing: -0.3px; font-weight: 500; }
         .tt-event-title { font-weight: bold; font-size: 11px; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .tt-event-loc { color: #888; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 50; border-top-left-radius: 20px; border-top-right-radius: 20px; }
-        .nav-item { flex: 1; text-align: center; padding: 15px 0; font-size: 16px; color: #ccc; cursor: pointer; transition: color 0.3s; }
+        .nav-item { flex: 1; text-align: center; padding: 15px 0; font-size: 16px; color: #ccc; cursor: pointer; transition: color 0.3s; font-weight: 600; }
         .app-container[data-theme="소율"] .nav-item.active { color: #FF8599; font-weight: bold; }
         .app-container[data-theme="소원"] .nav-item.active { color: #85C5FF; font-weight: bold; }
         .app-container[data-theme="전체"] .nav-item.active { color: #333; font-weight: bold; }
 
-        .fab { position: fixed; bottom: 80px; right: calc(50% - 240px + 20px); width: 60px; height: 60px; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 35px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); cursor: pointer; z-index: 100; border: none; transition: 0.3s; }
+        .fab { position: fixed; bottom: 80px; right: calc(50% - 240px + 20px); width: 60px; height: 60px; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 35px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); cursor: pointer; z-index: 100; border: none; transition: 0.3s; font-weight: 300; }
         .app-container[data-theme="소율"] .fab { background-color: var(--color-soyul); }
         .app-container[data-theme="소원"] .fab { background-color: var(--color-sowon); color: #333; }
         .app-container[data-theme="전체"] .fab { background-color: #333; }
@@ -121,20 +118,20 @@
         body.view-only-mode .card-actions { display: none !important; }
 
         .overlay-screen, .modal { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-color); z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
-        #login-screen { display: none !important; } /* 비밀번호 입력 화면 숨김 처리 */
+        #login-screen { display: none !important; }
         .modal { background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 150; display: none; justify-content: center; align-items: flex-end; }
         .modal-content { background: white; width: 100%; max-height: 90vh; overflow-y: auto; border-top-left-radius: 30px; border-top-right-radius: 30px; padding: 30px 20px; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
         .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; margin-bottom: 5px; font-size: 14px; color: var(--text-main); }
+        .input-group label { display: block; margin-bottom: 5px; font-size: 14px; color: var(--text-main); font-weight: 600; }
         .input-group input, .input-group select { width: 100%; padding: 12px 15px; border: 2px solid #eee; border-radius: 15px; font-size: 16px; outline: none; transition: 0.2s; }
         .input-group input:focus, .input-group select:focus { border-color: #ccc; }
         .time-row { display: flex; gap: 10px; }
         .time-row > div { flex: 1; }
 
         .select-group { display: flex; gap: 5px; margin-bottom: 15px; }
-        .form-btn { flex: 1; padding: 10px 0; text-align: center; background: #f5f5f5; border-radius: 10px; color: #888; cursor: pointer; font-size: 15px; }
+        .form-btn { flex: 1; padding: 10px 0; text-align: center; background: #f5f5f5; border-radius: 10px; color: #888; cursor: pointer; font-size: 15px; font-weight: 600; }
         .form-btn.day-btn.selected { background: #333; color: white; }
         .form-btn.child-btn.selected[data-child="소율"] { background: var(--color-soyul); color: white; }
         .form-btn.child-btn.selected[data-child="소원"] { background: var(--color-sowon); color: #333; }
@@ -143,14 +140,14 @@
         .form-btn.season-btn.selected[data-season="vacation"] { background: #FF9800; color: white; }
         .form-btn.season-btn.selected[data-season="all"] { background: #4CAF50; color: white; }
 
-        /* 과목 아이콘 디자인 수정 */
-        .emoji-selector { display: flex; gap: 8px; margin-bottom: 15px; }
-        .emoji-btn { padding: 8px 5px; background: #f5f5f5; border: 2px solid transparent; border-radius: 12px; cursor: pointer; flex: 1; text-align: center; }
+        /* 과목 아이콘 디자인 (미술🎨 포함) */
+        .emoji-selector { display: flex; gap: 6px; margin-bottom: 15px; }
+        .emoji-btn { padding: 8px 3px; background: #f5f5f5; border: 2px solid transparent; border-radius: 12px; cursor: pointer; flex: 1; text-align: center; }
         .emoji-btn.selected { background: #E8F4FA; border-color: var(--primary); }
-        .emoji-btn-icon { font-size: 24px; margin-bottom: 4px; }
-        .emoji-btn-text { font-size: 11px; color: #555; }
+        .emoji-btn-icon { font-size: 22px; margin-bottom: 4px; }
+        .emoji-btn-text { font-size: 11px; color: #555; font-weight: 600; }
 
-        .btn-full { width: 100%; padding: 15px; background-color: #333; color: white; border: none; border-radius: 15px; font-size: 18px; cursor: pointer; margin-top: 10px; }
+        .btn-full { width: 100%; padding: 15px; background-color: #333; color: white; border: none; border-radius: 15px; font-size: 18px; cursor: pointer; margin-top: 10px; font-weight: bold; }
         .btn-cancel { background-color: #eee; color: #333; margin-top: 10px; }
 
         .hidden { display: none !important; }
@@ -172,10 +169,6 @@
         <div class="season-tabs" id="main-season-tabs">
             <div class="season-tab active" data-season="regular">🏫 학기중 시간표</div>
             <div class="season-tab" data-season="vacation">🌴 방학용 시간표</div>
-        </div>
-
-        <div class="family-id-display" id="display-family-id">
-            가족 코드: - <span id="demo-badge" class="demo-badge">테스트 모드</span>
         </div>
     </header>
 
@@ -263,12 +256,15 @@
 
             <div class="input-group">
                 <label>학원/수업명</label>
-                <input type="text" id="input-title" placeholder="예: 피아노 학원" autocomplete="off">
+                <input type="text" id="input-title" placeholder="예: 피아노 학원, 미술 학원" autocomplete="off">
             </div>
 
-            <!-- 과목 5개로 변경 -->
+            <!-- 과목 아이콘 (미술🎨 포함 총 6개) -->
             <label style="display:block; margin-bottom:5px; font-size:14px; color:var(--text-main);">아이콘 (자동선택 됨)</label>
             <div class="emoji-selector" id="emoji-container">
+                <div class="emoji-btn" data-emoji="🎨">
+                    <div class="emoji-btn-icon">🎨</div><div class="emoji-btn-text">미술</div>
+                </div>
                 <div class="emoji-btn" data-emoji="⚽">
                     <div class="emoji-btn-icon">⚽</div><div class="emoji-btn-text">체육</div>
                 </div>
@@ -293,7 +289,7 @@
 
             <div class="input-group">
                 <label>비고 / 준비물</label>
-                <input type="text" id="input-memo" placeholder="예: 피아노 교재 챙기기" autocomplete="off">
+                <input type="text" id="input-memo" placeholder="예: 스케치북, 피아노 교재 챙기기" autocomplete="off">
             </div>
 
             <button id="btn-save" class="btn-full">저장하기</button>
@@ -343,7 +339,6 @@
     let currentDayTab = dayNames[todayIndex]; 
 
     const appContainer = document.getElementById('app-container');
-    const displayFamilyId = document.getElementById('display-family-id');
     const viewContainer = document.getElementById('view-container');
     const scheduleList = document.getElementById('schedule-list');
     const weeklyView = document.getElementById('weekly-view');
@@ -378,13 +373,10 @@
     }
     initTimetableGrid();
 
-    // 진입 시 바로 앱 초기화 (비밀번호 입력 화면 없이 자동 진입)
+    // 진입 시 바로 앱 초기화
     initApp();
 
     function initApp() {
-        if (!isFirebaseActive) document.getElementById('demo-badge').style.display = 'inline-block';
-        displayFamilyId.childNodes[0].nodeValue = `가족 코드: ${familyId} (변경) `;
-        
         updateUI();
 
         if (isFirebaseActive) {
@@ -551,15 +543,6 @@
         else if (e.target.classList.contains('edit-btn')) { openEditModal(e.target.getAttribute('data-id')); }
     });
 
-    displayFamilyId.addEventListener('click', () => {
-        const inputId = prompt('가족 코드를 변경하거나 입력하세요:', familyId);
-        if (inputId && inputId.trim() !== '') {
-            familyId = inputId.trim();
-            localStorage.setItem('familyId', familyId);
-            initApp();
-        }
-    });
-
     document.getElementById('btn-open-modal').addEventListener('click', () => {
         editingId = null;
         document.getElementById('modal-title').textContent = '새로운 스케줄 추가';
@@ -630,14 +613,15 @@
         });
     });
 
-    // 5과목 자동 할당 로직
+    // 과목 자동 할당 로직 (미술🎨 포함)
     function autoAssignEmoji(title) {
-        if(title.includes('체육') || title.includes('축구') || title.includes('태권도') || title.includes('수영') || title.includes('운동')) return '⚽';
-        if(title.includes('영어') || title.includes('파닉스') || title.includes('원어민')) return '🔤';
+        if(title.includes('미술') || title.includes('그림') || title.includes('만화') || title.includes('소묘') || title.includes('수채화') || title.includes('드로잉') || title.includes('아뜰리에')) return '🎨';
+        if(title.includes('체육') || title.includes('축구') || title.includes('태권도') || title.includes('수영') || title.includes('운동') || title.includes('줄넘기') || title.includes('발레')) return '⚽';
+        if(title.includes('영어') || title.includes('파닉스') || title.includes('원어민') || title.includes('리딩')) return '🔤';
         if(title.includes('수학') || title.includes('산수') || title.includes('연산') || title.includes('사고력')) return '➕';
-        if(title.includes('음악') || title.includes('피아노') || title.includes('바이올린') || title.includes('노래')) return '🎵';
-        if(title.includes('컴퓨터') || title.includes('코딩') || title.includes('방과후')) return '💻';
-        return '⚽'; // 기본값
+        if(title.includes('음악') || title.includes('피아노') || title.includes('바이올린') || title.includes('노래') || title.includes('우쿨렐레')) return '🎵';
+        if(title.includes('컴퓨터') || title.includes('코딩') || title.includes('방과후') || title.includes('로봇')) return '💻';
+        return '🎨'; // 기본값
     }
 
     document.getElementById('btn-save').addEventListener('click', () => {
