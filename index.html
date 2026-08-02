@@ -38,16 +38,22 @@
 
         .app-container { width: 100%; max-width: 480px; height: 100vh; background-color: var(--bg-color); position: relative; display: flex; flex-direction: column; overflow: hidden; }
 
-        header { background-color: white; padding: 40px 20px 10px 20px; text-align: center; z-index: 10; }
+        header { background-color: white; padding: 25px 20px 10px 20px; text-align: center; z-index: 10; border-bottom: 1px solid #f0f0f0; }
         header h1 { color: #333; font-size: 22px; letter-spacing: 1px; margin-bottom: 5px; }
-        .family-id-display { font-size: 13px; color: #888; cursor: pointer; }
+        .family-id-display { font-size: 12px; color: #888; cursor: pointer; margin-top: 4px; }
         .demo-badge { background-color: #ccc; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-left: 5px; display: none; }
 
-        .child-tabs { display: flex; justify-content: center; gap: 8px; padding: 10px 20px; background: white; }
+        .child-tabs { display: flex; justify-content: center; gap: 8px; padding: 6px 0; background: white; }
         .child-tab { padding: 8px 18px; border-radius: 20px; font-size: 15px; background: #f0f0f0; color: #888; cursor: pointer; transition: 0.2s; }
         .child-tab.active[data-child="소율"] { background: var(--color-soyul); color: white; }
         .child-tab.active[data-child="소원"] { background: var(--color-sowon); color: #333; }
         .child-tab.active[data-child="전체"] { background: #333; color: white; }
+
+        /* 방학용 / 학기중 시간표 전용 시즌 스위처 스타일 */
+        .season-tabs { display: flex; justify-content: center; gap: 8px; padding: 6px 0; margin-top: 4px; background: white; }
+        .season-tab { flex: 1; text-align: center; padding: 7px 12px; border-radius: 15px; font-size: 14px; background: #f5f5f5; color: #888; cursor: pointer; transition: 0.2s; border: 1.5px solid transparent; }
+        .season-tab.active[data-season="regular"] { background: #E8F4FA; color: #1E88E5; border-color: #90CAF9; font-weight: bold; }
+        .season-tab.active[data-season="vacation"] { background: #FFF3E0; color: #E65100; border-color: #FFB74D; font-weight: bold; }
 
         .day-tabs { display: flex; justify-content: space-between; background-color: white; padding: 5px 15px 10px; border-bottom: 1px solid #eee; z-index: 9; }
         .day-tab { flex: 1; text-align: center; padding: 8px 0; border-radius: 15px; font-size: 16px; color: var(--text-sub); cursor: pointer; transition: 0.2s; margin: 0 5px; }
@@ -67,6 +73,10 @@
         .card-badge { display: inline-block; padding: 2px 6px; border-radius: 5px; font-size: 11px; margin-right: 5px; vertical-align: middle; }
         .badge-소율 { background: var(--color-soyul); color: white; }
         .badge-소원 { background: var(--color-sowon); color: #333; }
+        .badge-season-vacation { background: #FF9800; color: white; }
+        .badge-season-regular { background: #1E88E5; color: white; }
+        .badge-season-all { background: #4CAF50; color: white; }
+
         .card-time { font-size: 14px; color: #666; margin-bottom: 3px; font-weight: bold; }
         .card-title { font-size: 20px; margin-bottom: 8px; color: #333; }
         .card-detail { font-size: 13px; color: var(--text-sub); display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
@@ -111,6 +121,7 @@
         body.view-only-mode .card-actions { display: none !important; }
 
         .overlay-screen, .modal { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-color); z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        #login-screen { display: none !important; } /* 비밀번호 입력 화면 숨김 처리 */
         .modal { background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 150; display: none; justify-content: center; align-items: flex-end; }
         .modal-content { background: white; width: 100%; max-height: 90vh; overflow-y: auto; border-top-left-radius: 30px; border-top-right-radius: 30px; padding: 30px 20px; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -128,6 +139,10 @@
         .form-btn.child-btn.selected[data-child="소율"] { background: var(--color-soyul); color: white; }
         .form-btn.child-btn.selected[data-child="소원"] { background: var(--color-sowon); color: #333; }
 
+        .form-btn.season-btn.selected[data-season="regular"] { background: #1E88E5; color: white; }
+        .form-btn.season-btn.selected[data-season="vacation"] { background: #FF9800; color: white; }
+        .form-btn.season-btn.selected[data-season="all"] { background: #4CAF50; color: white; }
+
         /* 과목 아이콘 디자인 수정 */
         .emoji-selector { display: flex; gap: 8px; margin-bottom: 15px; }
         .emoji-btn { padding: 8px 5px; background: #f5f5f5; border: 2px solid transparent; border-radius: 12px; cursor: pointer; flex: 1; text-align: center; }
@@ -144,23 +159,21 @@
 </head>
 <body>
 
-<div class="app-container" id="app-container" data-theme="소율">
-
-    <div id="login-screen" class="overlay-screen">
-        <h1 style="font-size: 30px; margin-bottom: 10px;">👨‍👩‍👧‍👦 소율소원 시간표</h1>
-        <p style="margin-bottom: 30px; color: var(--text-sub);">가족 코드를 입력해 기기를 연결하세요!</p>
-        <div class="input-group" style="width: 100%;">
-            <input type="text" id="family-id-input" placeholder="예: 1234" style="text-align: center; font-size: 20px;">
-        </div>
-        <button id="btn-login" class="btn-full">시작하기</button>
-    </div>
+<div class="app-container" id="app-container" data-theme="전체">
 
     <header>
         <div class="child-tabs" id="main-child-tabs">
-            <div class="child-tab active" data-child="소율">👧 소율</div>
+            <div class="child-tab" data-child="소율">👧 소율</div>
             <div class="child-tab" data-child="소원">🧒 소원</div>
-            <div class="child-tab" data-child="전체">모아보기</div>
+            <div class="child-tab active" data-child="전체">모아보기</div>
         </div>
+
+        <!-- 방학용/학기중 시간표 선택 바 -->
+        <div class="season-tabs" id="main-season-tabs">
+            <div class="season-tab active" data-season="regular">🏫 학기중 시간표</div>
+            <div class="season-tab" data-season="vacation">🌴 방학용 시간표</div>
+        </div>
+
         <div class="family-id-display" id="display-family-id">
             가족 코드: - <span id="demo-badge" class="demo-badge">테스트 모드</span>
         </div>
@@ -219,6 +232,13 @@
             <div class="select-group" id="form-child-selector">
                 <div class="form-btn child-btn selected" data-child="소율">👧 소율</div>
                 <div class="form-btn child-btn" data-child="소원">🧒 소원</div>
+            </div>
+
+            <label style="display:block; margin-bottom:5px; font-size:14px; color:var(--text-main);">시간표 구분 (학기중/방학용)</label>
+            <div class="select-group" id="form-season-selector">
+                <div class="form-btn season-btn selected" data-season="regular">🏫 학기중</div>
+                <div class="form-btn season-btn" data-season="vacation">🌴 방학용</div>
+                <div class="form-btn season-btn" data-season="all">🔄 공통</div>
             </div>
 
             <label style="display:block; margin-bottom:5px; font-size:14px; color:var(--text-main);">반복 요일</label>
@@ -309,11 +329,12 @@
         try { app = initializeApp(firebaseConfig); db = getDatabase(app); isFirebaseActive = true; } catch(e) { console.error("Firebase 에러:", e); }
     }
 
-    let familyId = localStorage.getItem('familyId') || '';
+    let familyId = localStorage.getItem('familyId') || 'soso_family';
     let selectedEmoji = '';
     let allSchedules = []; 
     let currentView = 'daily'; 
-    let currentChild = '소율'; 
+    let currentChild = '전체'; // 기본값을 소율소원 통합 모아보기로 설정
+    let currentSeason = 'regular'; // 기본값: 학기중 시간표
     let editingId = null; 
     
     const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
@@ -322,7 +343,6 @@
     let currentDayTab = dayNames[todayIndex]; 
 
     const appContainer = document.getElementById('app-container');
-    const loginScreen = document.getElementById('login-screen');
     const displayFamilyId = document.getElementById('display-family-id');
     const viewContainer = document.getElementById('view-container');
     const scheduleList = document.getElementById('schedule-list');
@@ -358,15 +378,10 @@
     }
     initTimetableGrid();
 
-    if (familyId) { initApp(); }
-    document.getElementById('btn-login').addEventListener('click', () => {
-        const inputId = document.getElementById('family-id-input').value.trim();
-        if(inputId) { familyId = inputId; localStorage.setItem('familyId', familyId); initApp(); } 
-        else { alert('가족 코드를 입력해주세요!'); }
-    });
+    // 진입 시 바로 앱 초기화 (비밀번호 입력 화면 없이 자동 진입)
+    initApp();
 
     function initApp() {
-        loginScreen.classList.add('hidden');
         if (!isFirebaseActive) document.getElementById('demo-badge').style.display = 'inline-block';
         displayFamilyId.childNodes[0].nodeValue = `가족 코드: ${familyId} (변경) `;
         
@@ -388,6 +403,13 @@
         tab.addEventListener('click', (e) => {
             currentChild = e.target.getAttribute('data-child');
             appContainer.setAttribute('data-theme', currentChild); 
+            updateUI(); renderCurrentView();
+        });
+    });
+
+    document.querySelectorAll('.season-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            currentSeason = e.target.getAttribute('data-season');
             updateUI(); renderCurrentView();
         });
     });
@@ -415,6 +437,7 @@
 
     function updateUI() {
         document.querySelectorAll('.child-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-child') === currentChild));
+        document.querySelectorAll('.season-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-season') === currentSeason));
         document.querySelectorAll('.day-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-day') === currentDayTab));
     }
 
@@ -425,7 +448,17 @@
     function renderDaily() {
         scheduleList.innerHTML = '';
         let filtered = allSchedules.filter(s => !s.days || s.days.includes(currentDayTab));
-        if(currentChild !== '전체') filtered = filtered.filter(s => (s.child || '소율') === currentChild);
+        if (currentChild !== '전체') filtered = filtered.filter(s => (s.child || '소율') === currentChild);
+        
+        // 학기중 vs 방학용 시간표 필터링
+        filtered = filtered.filter(s => {
+            const itemSeason = s.season || 'regular';
+            if (currentSeason === 'vacation') {
+                return itemSeason === 'vacation' || itemSeason === 'all';
+            } else {
+                return itemSeason === 'regular' || itemSeason === 'all';
+            }
+        });
         
         if (filtered.length > 0) {
             filtered.sort((a, b) => (a.startTime || a.time).localeCompare(b.startTime || b.time));
@@ -434,13 +467,17 @@
                 const sTime = format12(item.startTime || item.time || "13:00");
                 const eTime = format12(item.endTime || "");
                 const badgeHTML = currentChild === '전체' ? `<span class="card-badge badge-${childName}">${childName}</span>` : '';
+                
+                let seasonBadgeHTML = '';
+                if (item.season === 'vacation') seasonBadgeHTML = `<span class="card-badge badge-season-vacation">🌴 방학</span>`;
+                else if (item.season === 'all') seasonBadgeHTML = `<span class="card-badge badge-season-all">🔄 공통</span>`;
 
                 const card = document.createElement('div');
                 card.className = `card card-${childName}`;
                 card.innerHTML = `
                     <div class="card-emoji">${item.emoji}</div>
                     <div class="card-content">
-                        <div class="card-time">${badgeHTML} ⏰ ${sTime} ~ ${eTime}</div>
+                        <div class="card-time">${badgeHTML}${seasonBadgeHTML} ⏰ ${sTime} ~ ${eTime}</div>
                         <div class="card-title">${item.title}</div>
                         <div class="card-detail">📍 장소: ${item.location || item.pickup || "미지정"}</div>
                         ${item.memo ? `<div class="card-detail" style="color:#FFB3BA;">🎒 ${item.memo}</div>` : ''}
@@ -453,7 +490,7 @@
                 scheduleList.appendChild(card);
             });
         } else {
-            scheduleList.innerHTML = `<div style="text-align:center; padding: 50px 20px; color: var(--text-sub);"><div style="font-size:50px; margin-bottom:15px;">👀</div>등록된 스케줄이 없어요!<br>버튼을 눌러 추가해주세요.</div>`;
+            scheduleList.innerHTML = `<div style="text-align:center; padding: 50px 20px; color: var(--text-sub);"><div style="font-size:50px; margin-bottom:15px;">👀</div>등록된 ${currentSeason==='vacation'?'방학':'학기중'} 스케줄이 없어요!<br>버튼을 눌러 추가해주세요.</div>`;
         }
     }
 
@@ -462,7 +499,14 @@
         
         allSchedules.forEach(item => {
             const childName = item.child || '소율';
-            if(currentChild !== '전체' && childName !== currentChild) return;
+            if (currentChild !== '전체' && childName !== currentChild) return;
+
+            const itemSeason = item.season || 'regular';
+            if (currentSeason === 'vacation') {
+                if (itemSeason !== 'vacation' && itemSeason !== 'all') return;
+            } else {
+                if (itemSeason !== 'regular' && itemSeason !== 'all') return;
+            }
 
             const daysToApply = item.days || ['월','화','수','목','금']; 
             const sTime24 = item.startTime || item.time || "13:00";
@@ -484,10 +528,12 @@
                 if (childName === '소원') inlineStyle += ` right: 2%; left: auto; width: 46%;`;
             } else { inlineStyle += ` left: 2px; right: 2px;`; }
             
+            const seasonPrefix = item.season === 'vacation' ? '🌴 ' : '';
+
             const eventHTML = `
                 <div class="tt-event event-${childName}" style="${inlineStyle}">
                     <div class="tt-event-time">${format12(sTime24)}~${format12(eTime24)}</div>
-                    <div class="tt-event-title">${currentChild==='전체'?`[${childName}]`:''} ${item.emoji} ${item.title}</div>
+                    <div class="tt-event-title">${currentChild==='전체'?`[${childName}]`:''} ${seasonPrefix}${item.emoji} ${item.title}</div>
                     <div class="tt-event-loc">${item.location || ''}</div>
                 </div>
             `;
@@ -506,7 +552,12 @@
     });
 
     displayFamilyId.addEventListener('click', () => {
-        if(confirm('다른 가족 코드로 변경하시겠습니까?')) { localStorage.removeItem('familyId'); location.reload(); }
+        const inputId = prompt('가족 코드를 변경하거나 입력하세요:', familyId);
+        if (inputId && inputId.trim() !== '') {
+            familyId = inputId.trim();
+            localStorage.setItem('familyId', familyId);
+            initApp();
+        }
     });
 
     document.getElementById('btn-open-modal').addEventListener('click', () => {
@@ -523,6 +574,7 @@
         
         let childToSelect = currentChild === '전체' ? '소율' : currentChild;
         document.querySelectorAll('.child-btn').forEach(b => b.classList.toggle('selected', b.getAttribute('data-child') === childToSelect));
+        document.querySelectorAll('.season-btn').forEach(b => b.classList.toggle('selected', b.getAttribute('data-season') === currentSeason));
 
         modal.style.display = 'flex';
     });
@@ -546,6 +598,9 @@
         const itemChild = item.child || '소율';
         document.querySelectorAll('.child-btn').forEach(b => b.classList.toggle('selected', b.getAttribute('data-child') === itemChild));
 
+        const itemSeason = item.season || 'regular';
+        document.querySelectorAll('.season-btn').forEach(b => b.classList.toggle('selected', b.getAttribute('data-season') === itemSeason));
+
         modal.style.display = 'flex';
     }
     
@@ -554,6 +609,13 @@
     document.querySelectorAll('.child-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('.child-btn').forEach(b => b.classList.remove('selected'));
+            e.target.classList.add('selected');
+        });
+    });
+
+    document.querySelectorAll('.season-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.season-btn').forEach(b => b.classList.remove('selected'));
             e.target.classList.add('selected');
         });
     });
@@ -587,13 +649,14 @@
         
         const selectedDays = Array.from(document.querySelectorAll('.day-btn.selected')).map(el => el.getAttribute('data-day'));
         const selectedChild = document.querySelector('.child-btn.selected').getAttribute('data-child');
+        const selectedSeason = document.querySelector('.season-btn.selected').getAttribute('data-season');
 
         if(selectedDays.length === 0) { alert('반복할 요일을 최소 1개 이상 선택해주세요!'); return; }
         if(!title || !locationStr) { alert('학원명과 장소를 모두 입력해주세요!'); return; }
         if(startTime >= endTime) { alert('종료 시간은 시작 시간보다 늦어야 합니다!'); return; }
 
         const newData = {
-            child: selectedChild, startTime, endTime, title, location: locationStr, memo, 
+            child: selectedChild, season: selectedSeason, startTime, endTime, title, location: locationStr, memo, 
             emoji: selectedEmoji || autoAssignEmoji(title), days: selectedDays
         };
 
