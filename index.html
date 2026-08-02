@@ -40,6 +40,14 @@
         header { background-color: white; padding: 25px 20px 10px 20px; text-align: center; z-index: 10; border-bottom: 1px solid #f0f0f0; }
         header h1 { color: #333; font-size: 22px; letter-spacing: 1px; margin-bottom: 5px; }
 
+        /* 방학중/학기중 운영 기간 설정 스위처 CSS */
+        .season-setting-box { display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; padding: 6px 12px; border-radius: 14px; margin-bottom: 8px; border: 1px solid #E2E8F0; }
+        .setting-title { font-size: 13px; color: #475569; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .setting-options { display: flex; background: #E2E8F0; padding: 2px; border-radius: 10px; gap: 2px; }
+        .setting-opt-btn { border: none; background: transparent; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #64748B; cursor: pointer; transition: all 0.2s ease; }
+        .setting-opt-btn.active[data-mode="regular"] { background: #1E88E5; color: white; box-shadow: 0 2px 4px rgba(30,136,229,0.25); }
+        .setting-opt-btn.active[data-mode="vacation"] { background: #FF9800; color: white; box-shadow: 0 2px 4px rgba(255,152,0,0.25); }
+
         .child-tabs { display: flex; justify-content: center; gap: 8px; padding: 6px 0; background: white; }
         .child-tab { padding: 8px 18px; border-radius: 20px; font-size: 15px; background: #f0f0f0; color: #888; cursor: pointer; transition: 0.2s; font-weight: 600; }
         .child-tab.active[data-child="소율"] { background: var(--color-soyul); color: white; }
@@ -167,6 +175,15 @@
 <div class="app-container" id="app-container" data-theme="전체">
 
     <header>
+        <!-- 현재 학기/방학 기간 설정 바 -->
+        <div class="season-setting-box">
+            <div class="setting-title">📌 현재 운영 기간</div>
+            <div class="setting-options" id="season-mode-selector">
+                <button class="setting-opt-btn active" data-mode="regular">🏫 학기중</button>
+                <button class="setting-opt-btn" data-mode="vacation">🌴 방학 기간</button>
+            </div>
+        </div>
+
         <div class="child-tabs" id="main-child-tabs">
             <div class="child-tab" data-child="소율">👧 소율</div>
             <div class="child-tab" data-child="소원">🧒 소원</div>
@@ -336,13 +353,14 @@
     }
 
     let familyId = localStorage.getItem('familyId') || 'soso_family';
+    let activeSeasonMode = localStorage.getItem('activeSeasonMode_' + familyId) || 'regular';
     let selectedEmoji = '';
     let allSchedules = []; 
     let currentView = 'daily'; 
     let currentChild = '전체'; // 기본값을 소율소원 통합 모아보기로 설정
-    let currentSeason = 'regular'; // 기본값: 학기중 시간표
+    let currentSeason = activeSeasonMode; // 기본값: 현재 설정된 학기중/방학기간에 맞춤
     let editingId = null; 
-    
+
     const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
     let todayIndex = new Date().getDay(); 
     if (todayIndex === 0 || todayIndex === 6) todayIndex = 1;
@@ -424,6 +442,17 @@
         updateUI();
 
         if (isFirebaseActive) {
+            const modeRef = ref(db, 'seasonMode/' + familyId);
+            onValue(modeRef, (snapshot) => {
+                const mode = snapshot.val();
+                if (mode === 'vacation' || mode === 'regular') {
+                    activeSeasonMode = mode;
+                    currentSeason = activeSeasonMode;
+                    updateUI();
+                    renderCurrentView();
+                }
+            });
+
             const scheduleRef = ref(db, 'schedules/' + familyId);
             onValue(scheduleRef, (snapshot) => {
                 const data = snapshot.val();
@@ -434,6 +463,18 @@
             loadLocalSchedules();
         }
     }
+
+    document.querySelectorAll('.setting-opt-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            activeSeasonMode = e.target.getAttribute('data-mode');
+            currentSeason = activeSeasonMode;
+            localStorage.setItem('activeSeasonMode_' + familyId, activeSeasonMode);
+            if (isFirebaseActive) {
+                set(ref(db, 'seasonMode/' + familyId), activeSeasonMode);
+            }
+            updateUI(); renderCurrentView();
+        });
+    });
 
     document.querySelectorAll('.child-tab').forEach(tab => {
         tab.addEventListener('click', (e) => {
@@ -472,6 +513,7 @@
     });
 
     function updateUI() {
+        document.querySelectorAll('.setting-opt-btn').forEach(t => t.classList.toggle('active', t.getAttribute('data-mode') === activeSeasonMode));
         document.querySelectorAll('.child-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-child') === currentChild));
         document.querySelectorAll('.season-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-season') === currentSeason));
         document.querySelectorAll('.day-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-day') === currentDayTab));
