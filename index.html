@@ -352,7 +352,7 @@
         try { app = initializeApp(firebaseConfig); db = getDatabase(app); isFirebaseActive = true; } catch(e) { console.error("Firebase 에러:", e); }
     }
 
-    let familyId = localStorage.getItem('familyId') || 'soso_family';
+    let familyId = new URLSearchParams(window.location.search).get('family') || localStorage.getItem('familyId') || '1234';
     let activeSeasonMode = localStorage.getItem('activeSeasonMode_' + familyId) || 'regular';
     let selectedEmoji = '';
     let allSchedules = []; 
