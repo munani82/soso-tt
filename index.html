@@ -81,18 +81,22 @@
         .card-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; }
         .action-btn { background: none; border: none; font-size: 16px; cursor: pointer; color: #ccc; padding: 2px; }
 
-        .weekly-view { display: none; flex-direction: column; padding: 12px; height: 100%; padding-bottom: 85px; }
-        .tt-wrapper { display: flex; flex-direction: column; background: white; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); height: 100%; overflow: hidden; border: 1px solid #EAEAEA; }
-        .tt-header { display: flex; background: #F8FAFC; border-bottom: 2px solid #E2E8F0; z-index: 10; font-weight: bold; }
-        .tt-time-col { width: 45px; flex-shrink: 0; }
-        .tt-day { flex: 1; text-align: center; padding: 12px 0; font-size: 14px; color: #334155; border-left: 1px solid #E2E8F0; font-weight: bold; }
-        .tt-body-scroll { flex: 1; overflow-y: auto; position: relative; }
-        .tt-body { position: relative; height: 1344px; }
+        .weekly-view { display: none; flex-direction: column; padding: 10px; height: 100%; padding-bottom: 85px; }
+        .tt-wrapper { display: flex; flex-direction: column; background: white; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); height: 100%; overflow: hidden; border: 1px solid #EAEAEA; position: relative; }
+        
+        .tt-body-scroll { flex: 1; overflow: auto; position: relative; -webkit-overflow-scrolling: touch; }
+        .tt-inner-container { min-width: 620px; position: relative; }
+
+        .tt-header { display: flex; background: #F8FAFC; border-bottom: 2px solid #E2E8F0; z-index: 20; font-weight: bold; position: sticky; top: 0; }
+        .tt-time-col { width: 50px; flex-shrink: 0; background: #F8FAFC; position: sticky; left: 0; z-index: 25; border-right: 1px solid #E2E8F0; }
+        .tt-day { flex: 1; min-width: 110px; text-align: center; padding: 12px 0; font-size: 15px; color: #334155; border-left: 1px solid #E2E8F0; font-weight: bold; }
+        
+        .tt-body { position: relative; height: 1344px; display: flex; }
         .tt-grid-lines { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
         .tt-grid-line { height: 96px; border-bottom: 1px dashed #E2E8F0; box-sizing: border-box; display: flex; }
-        .tt-time-label { width: 45px; text-align: center; font-size: 11px; font-weight: 600; color: #64748B; transform: translateY(-7px); background: transparent; }
-        .tt-columns { display: flex; position: absolute; top: 0; left: 45px; right: 0; bottom: 0; z-index: 2; }
-        .tt-col { flex: 1; border-left: 1px solid #F1F5F9; position: relative; }
+        .tt-time-label { width: 50px; flex-shrink: 0; text-align: center; font-size: 11px; font-weight: 600; color: #64748B; transform: translateY(-7px); background: #FDFBF7; position: sticky; left: 0; z-index: 15; border-right: 1px solid #E2E8F0; }
+        .tt-columns { display: flex; position: absolute; top: 0; left: 50px; right: 0; bottom: 0; z-index: 2; }
+        .tt-col { flex: 1; min-width: 110px; border-left: 1px solid #F1F5F9; position: relative; }
         
         .tt-event { position: absolute; border-radius: 8px; padding: 5px 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); overflow: hidden; display: flex; flex-direction: column; justify-content: flex-start; border-left: 4px solid #ccc; transition: transform 0.1s ease; cursor: pointer; }
         .tt-event:hover { transform: scale(1.02); z-index: 10; }
@@ -189,23 +193,25 @@
 
         <div class="weekly-view" id="weekly-view">
             <div class="tt-wrapper">
-                <div class="tt-header">
-                    <div class="tt-time-col"></div>
-                    <div class="tt-day">월</div>
-                    <div class="tt-day">화</div>
-                    <div class="tt-day">수</div>
-                    <div class="tt-day">목</div>
-                    <div class="tt-day">금</div>
-                </div>
                 <div class="tt-body-scroll">
-                    <div class="tt-body">
-                        <div class="tt-grid-lines" id="tt-grid-lines"></div>
-                        <div class="tt-columns">
-                            <div class="tt-col" id="tt-col-월"></div>
-                            <div class="tt-col" id="tt-col-화"></div>
-                            <div class="tt-col" id="tt-col-수"></div>
-                            <div class="tt-col" id="tt-col-목"></div>
-                            <div class="tt-col" id="tt-col-금"></div>
+                    <div class="tt-inner-container">
+                        <div class="tt-header">
+                            <div class="tt-time-col"></div>
+                            <div class="tt-day">월</div>
+                            <div class="tt-day">화</div>
+                            <div class="tt-day">수</div>
+                            <div class="tt-day">목</div>
+                            <div class="tt-day">금</div>
+                        </div>
+                        <div class="tt-body">
+                            <div class="tt-grid-lines" id="tt-grid-lines"></div>
+                            <div class="tt-columns">
+                                <div class="tt-col" id="tt-col-월"></div>
+                                <div class="tt-col" id="tt-col-화"></div>
+                                <div class="tt-col" id="tt-col-수"></div>
+                                <div class="tt-col" id="tt-col-목"></div>
+                                <div class="tt-col" id="tt-col-금"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
