@@ -544,17 +544,13 @@
                 const childName = item.child || '소율';
                 const timeRangeStr = formatTimeRange(item.startTime || item.time || "13:00", item.endTime || "");
                 const badgeHTML = currentChild === '전체' ? `<span class="card-badge badge-${childName}">${childName}</span>` : '';
-                
-                let seasonBadgeHTML = '';
-                if (item.season === 'vacation') seasonBadgeHTML = `<span class="card-badge badge-season-vacation">🌴 방학</span>`;
-                else if (item.season === 'all') seasonBadgeHTML = `<span class="card-badge badge-season-all">🔄 공통</span>`;
 
                 const card = document.createElement('div');
                 card.className = `card card-${childName}`;
                 card.innerHTML = `
                     <div class="card-emoji">${item.emoji}</div>
                     <div class="card-content">
-                        <div class="card-time">${badgeHTML}${seasonBadgeHTML} ⏰ ${timeRangeStr}</div>
+                        <div class="card-time">${badgeHTML}⏰ ${timeRangeStr}</div>
                         <div class="card-title">${item.title}</div>
                         <div class="card-detail">📍 장소: ${item.location || item.pickup || "미지정"}</div>
                         ${item.memo ? `<div class="card-detail" style="color:#FFB3BA;">🎒 ${item.memo}</div>` : ''}
